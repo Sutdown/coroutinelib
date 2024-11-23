@@ -1,0 +1,15 @@
+# 忽略 CMake 构建目录和缓存文件
+cmake-build-debug
+./coroutinelib/cmake-build-debug
+./test/cmake-build-debug
+
+# 忽略 CMake 生成的缓存文件和构建文件夹
+test/CMakeCache.txt
+test/CMakeFiles
+
+
+# IDE configuration files
+.vscode
+
+# ignore build
+/build/
