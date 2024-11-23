@@ -1,3 +1,3 @@
 git add .
-git commit -m "initial preparations"
+git commit -m "thread"
 git push origin main                                                                
