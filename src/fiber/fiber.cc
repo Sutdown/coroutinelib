@@ -96,10 +96,10 @@ namespace colib
       std::cout << "Fiber(): child id = " << m_id << std::endl;
   }
 
-  Fiber::~Fiber()
-  {
+  Fiber::~Fiber(){
     s_fiber_count--;
-    if(m_stack){
+    if (m_stack)
+    {
       free(m_stack);
     }
     if (debug)
@@ -153,12 +153,11 @@ namespace colib
   void Fiber::yield()
   {
     assert(m_state == RUNNING || m_state == TERM);
-
+    SetThis(t_thread_fiber.get());
     if(m_state!=TERM){
       m_state = READY;
     }
 
-    SetThis(t_thread_fiber.get());
     if (swapcontext(&m_ctx, &(t_thread_fiber->m_ctx)))
     {
         std::cerr << "yield() to t_thread_fiber failed\n";

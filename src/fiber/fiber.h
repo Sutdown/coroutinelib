@@ -32,7 +32,8 @@ namespace colib
   // 创建用户协程
     Fiber(std::function<void()> cb,
           size_t stacksize = 0, bool run_in_scheduler = true);
-
+    ~Fiber();
+    
     // 重置协程状态和入口函数，复用栈空间，不重新创建栈
     void reset(std::function<void()> cb);
 
