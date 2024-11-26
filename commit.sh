@@ -1,3 +1,3 @@
 git add .
-git commit -m "debug"
+git commit -m "core dump debug"
 git push origin main                                                                
