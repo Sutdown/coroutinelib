@@ -4,12 +4,16 @@ static bool debug = false;
 
 namespace colib
 {
-  /* 一个协程最多知到两个协程的上下文*/
+  /* 一个协程最多知到两个个协程的上下文*/
   // 线程局部变量，当前线程正在运行的协程
   static thread_local Fiber *t_fiber = nullptr;
   // 线程局部变量，当前线程的主协程，切换到这个协程，相当于切换到主线程
   static thread_local std::shared_ptr<Fiber> t_thread_fiber = nullptr;
+  
+  // 第三个协程 调度协程
+  static thread_local Fiber *t_scheduler_fiber = nullptr;
 
+  // 协程ID，协程计数器
   static std::atomic<uint64_t> s_fiber_id{0};
   static std::atomic<uint64_t> s_fiber_count{0};
 
@@ -35,9 +39,15 @@ namespace colib
 
     std::shared_ptr<Fiber> main_fiber(new Fiber());
     t_thread_fiber = main_fiber;
+    t_scheduler_fiber = main_fiber.get(); // 分离调度协程和主协程逻辑
 
     assert(t_fiber == main_fiber.get());
     return t_fiber->shared_from_this();
+  }
+
+  void Fiber::SetSchedulerFiber(Fiber *f)
+  {
+    t_scheduler_fiber = f;
   }
 
   uint64_t Fiber::GetFiberId()
@@ -82,6 +92,12 @@ namespace colib
     // 栈大小默认128k
     m_stacksize = stacksize ? stacksize : 128000;
     m_stack = malloc(m_stacksize);
+
+    if (getcontext(&m_ctx))
+    {
+      std::cerr << "Fiber(std::function<void()> cb, size_t stacksize, bool run_in_scheduler) failed\n";
+      pthread_exit(NULL);
+    }
 
     // 初始化下文：
     m_ctx.uc_link = nullptr;
@@ -133,16 +149,23 @@ namespace colib
   void Fiber::resume()
   {
     assert(m_state == READY);
-
     m_state = RUNNING;
 
-      // 不参与协程调度器
-    SetThis(this);
-    if (swapcontext(&(t_thread_fiber->m_ctx), &m_ctx))
-    {
-      std::cerr << "resume() to t_thread_fiber failed\n";
-      pthread_exit(NULL);
-    } 
+    if (m_runInScheduler) {
+      SetThis(this);
+      if (swapcontext(&(t_scheduler_fiber->m_ctx), &m_ctx))
+      {
+        std::cerr << "resume() to t_scheduler_fiber failed\n";
+        pthread_exit(NULL);
+      }
+    } else {
+      SetThis(this);
+      if (swapcontext(&(t_thread_fiber->m_ctx), &m_ctx))
+      {
+        std::cerr << "resume() to t_thread_fiber failed\n";
+        pthread_exit(NULL);
+      }
+    }
   }
 
   /*
@@ -153,15 +176,25 @@ namespace colib
   void Fiber::yield()
   {
     assert(m_state == RUNNING || m_state == TERM);
-    SetThis(t_thread_fiber.get());
+    // SetThis(t_thread_fiber.get());
     if(m_state!=TERM){
       m_state = READY;
     }
 
-    if (swapcontext(&m_ctx, &(t_thread_fiber->m_ctx)))
-    {
+    if (m_runInScheduler) {
+      SetThis(t_scheduler_fiber);
+      if (swapcontext(&m_ctx, &(t_scheduler_fiber->m_ctx)))
+      {
+        std::cerr << "yield() to to t_scheduler_fiber failed\n";
+        pthread_exit(NULL);
+      }
+    } else {
+      SetThis(t_thread_fiber.get());
+      if (swapcontext(&m_ctx, &(t_thread_fiber->m_ctx)))
+      {
         std::cerr << "yield() to t_thread_fiber failed\n";
         pthread_exit(NULL);
+      }
     }
   }
 

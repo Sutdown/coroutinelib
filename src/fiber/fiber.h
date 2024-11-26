@@ -15,8 +15,6 @@ namespace colib
   class Fiber : public std::enable_shared_from_this<Fiber>
   {
   public:
-    typedef std::shared_ptr<Fiber> ptr;
-
     enum State
     {
       READY, // 就绪
@@ -68,6 +66,9 @@ namespace colib
 
     std::function<void()> m_cb; // 运行函数
     bool m_runInScheduler; // 是否参与协程调度器
+
+    public:
+      std::mutex m_mutex;
   };
 }
 #endif

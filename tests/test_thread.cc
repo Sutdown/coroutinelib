@@ -1,4 +1,4 @@
-#include "thread.h"
+#include "../src/thread/thread.h"
 #include <iostream>
 #include <memory>
 #include <vector>
