@@ -21,7 +21,7 @@ namespace colib{
       Fiber::GetThis(); // 创建主协程
 
       // 创建调度协程
-      m_schedulerFiber.reset(new Fiber(std::bind(&Scheduler::run, this)), 0, false);
+      m_schedulerFiber.reset(new Fiber(std::bind(&Scheduler::run, this), 0, false));
       Fiber::SetSchedulerFiber(m_schedulerFiber.get());
 
       m_threadCount = Thread::GetThreadID();

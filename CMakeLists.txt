@@ -11,7 +11,7 @@ set(SOURCES
     src/fiber/fiber.h
     src/scheduler/scheduler.cc
     src/scheduler/scheduler.h
-    tests/test_fiber.cc
+    tests/test_scheduler.cc
 )
 
 include_directories(

@@ -35,12 +35,19 @@ namespace colib{
     
     public:
       template<class FiberOrCb> // 协程对象or指针，线程号
-      void schedule(FiberOrCb fc,int thread=-1){
+      void scheduleLock(FiberOrCb fc,int thread=-1){
         bool need_tickle = false;
         {
           std::lock_guard<std::mutex> lock(m_mutex);
-          need_tickle = scheduleNoLock(fc, thread);
+          need_tickle = m_tasks.empty();
+
+          ScheduleTask task(fc, thread);
+          if (task.fiber || task.cb)
+          {
+            m_tasks.push_back(task);
+          }
         }
+
         if (need_tickle)
         {
           tickle(); // 唤醒idle协程
