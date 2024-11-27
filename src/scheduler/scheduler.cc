@@ -1,20 +1,55 @@
 #include"scheduler.h"
 
+static bool debug = false;
+
 namespace colib{
   // 当前线程的调度器，同一个调度器下的所有线程指向同一个调度器实例
   static thread_local Scheduler *t_scheduler = nullptr; 
-  // 当前线程的调度协程，每个线程独有一份调度协程
-  static thread_local Fiber *t_scheduler_fiber = nullptr;
 
   /* 调度器的创建 */
   // 线程数，是否将当前线程作为调度线程
   // caller线程，调用线程，也就是主线程
   Scheduler::Scheduler(size_t threads, bool use_caller, const std::string &name){
-    SYLAR_ASSERT(threads);
+    assert(threads > 0 && Scheduler::GetThis() == nullptr);
+
+    SetThis();
+    Thread::SetName(m_name);
+
+    // 当前协程是否直接参与协程调度
+    // 参与调度，也执行工作任务
+    if(use_caller){
+      threads--;
+      Fiber::GetThis(); // 创建主协程
+
+      // 创建调度协程
+      m_schedulerFiber.reset(new Fiber(std::bind(&Scheduler::run, this)), 0, false);
+      Fiber::SetSchedulerFiber(m_schedulerFiber.get());
+
+      m_threadCount = Thread::GetThreadID();
+      m_threadIDs.push_back(m_rootThread);
+    }
+
+    m_threadCount = threads;
+    if (debug)
+      std::cout << "Scheduler::Scheduler() success\n";
+  }
+
+  Scheduler::~Scheduler()
+  {
+    assert(stopping() == true);
+    if (GetThis() == this) {
+      t_scheduler = nullptr;
+    }
+    if (debug)
+      std::cout << "Scheduler::~Scheduler() success\n";
   }
 
   Scheduler *Scheduler::GetThis(){
-
+    return t_scheduler;
+  }
+  // 设置当前线程为公用的调度器实例
+  void Scheduler::SetThis(){
+    t_scheduler = this;
   }
 
   /* 调度器的启动 */
