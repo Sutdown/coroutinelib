@@ -51,13 +51,13 @@ namespace colib{
       void stop();
 
     protected:
-      void SetThis();          // 设置正在运行的调度器
+      void SetThis(); // 设置正在运行的调度器
 
-      virtual void tickle();   // 通知协程调度器有任务了
-      void run();              // 协程调度函数
-      virtual void idle();     // 无任务执行idle协程
+      virtual void tickle() {}; // 通知协程调度器有任务了
+      void run();               // 协程调度函数
+      virtual void idle();      // 无任务执行idle协程
 
-      virtual bool stopping(); // 是否可以停止
+      virtual bool stopping();                                // 是否可以停止
       bool hasIdleThreads() { return m_idleThreadCount > 0; } // 是否有空闲协程
 
     private:
@@ -96,10 +96,10 @@ namespace colib{
       private:
         std::string m_name; // 协程调度器名称
 
-        std::mutex m_mutex;                            // 互斥锁
-        std::vector<std::shared_ptr<Thread>> m_thread; // 线程池
-        std::list<ScheduleTask> m_tasks;               // 任务队列
-        std::vector<int> m_threadIDs;                  // 线程池的ID数组
+        std::mutex m_mutex;                             // 互斥锁
+        std::vector<std::shared_ptr<Thread>> m_threads; // 线程池
+        std::list<ScheduleTask> m_tasks;                // 任务队列
+        std::vector<int> m_threadIDs;                   // 线程池的ID数组
 
         size_t m_threadCount = 0; // 工作线程数量
         std::atomic<size_t> m_activeThreadCount = {0}; // 活跃线程数
