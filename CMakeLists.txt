@@ -11,6 +11,8 @@ set(SOURCES
     src/fiber/fiber.h
     src/scheduler/scheduler.cc
     src/scheduler/scheduler.h
+    src/timer/timer.cc
+    src/timer/timer.h
     tests/test_scheduler.cc
 )
 
@@ -18,6 +20,7 @@ include_directories(
       src/thread
       src/fiber
       src/scheduler
+      src/timer
 )
 
 add_executable(test ${SOURCES})
