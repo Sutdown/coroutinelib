@@ -1,3 +1,3 @@
 git add .
-git commit -m "timer"
+git commit -m "test timer"
 git push origin main                                                                
