@@ -204,6 +204,7 @@ namespace colib{
     return m_stopping && m_tasks.empty() && m_activeThreadCount == 0;
   }
 
+  // 
   void Scheduler::idle() {
     while(!stopping()){
       if (debug)
