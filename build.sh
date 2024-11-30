@@ -9,3 +9,7 @@ time=`echo $start $end | awk '{print $2-$1}'`
 echo "---------------------------------------"
 echo "编译完成！编译总耗时(cmake+make)：${time}s"
 echo "---------------------------------------"
+
+echo "-------------running-------------------"
+cd build
+./test_iomanager

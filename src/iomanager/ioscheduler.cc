@@ -92,11 +92,13 @@ namespace colib{
     FdContext *fd_ctx = nullptr;
 
     std::shared_lock<std::shared_mutex> read_lock(m_mutex);
-    if((int)m_fdContexts.size() > fd){
+   // std::shared_lock read_lock(m_mutex); 表达相似，可以互换
+
+    if ((int)m_fdContexts.size() > fd){
       fd_ctx = m_fdContexts[fd];
-      read_lock.lock();
-    }else{
       read_lock.unlock();
+    }else{
+     // read_lock.unlock();
       std::unique_lock<std::shared_mutex> write_lock(m_mutex);
       contextResize(fd * 1.5);
       fd_ctx = m_fdContexts[fd];
@@ -356,7 +358,8 @@ namespace colib{
           // 本轮idle结束之后，协程会重新调度
           if(event.data.fd==m_tickleFds[0]){
             uint8_t dummy[256];
-            while(read(m_tickleFds[0],dummy,sizeof(dummy))>0){}
+            while(read(m_tickleFds[0],dummy,sizeof(dummy))>0)
+              ;
             continue;
           }
 

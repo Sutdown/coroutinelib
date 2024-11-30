@@ -89,7 +89,15 @@ namespace colib{
           thread = thr;
         }
 
+        ScheduleTask(std::function<void()> *f, int thr)
+        {
+          cb.swap(*f);
+          thread = thr;
+        }
+
         ScheduleTask() {
+          fiber = nullptr;
+          cb = nullptr;
           thread = -1;
         }
 
