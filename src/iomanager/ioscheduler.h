@@ -23,6 +23,9 @@ namespace colib{
     };
   
   private:
+    /*事件上下文类
+    * fd的每个事件都有一个上下文，保存这个事件的回调函数和调度器
+    */
     struct FdContext{
       struct EventContext{
         Scheduler *scheduler = nullptr; // 调度器
