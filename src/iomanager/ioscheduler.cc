@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <cstring>
 
-static bool debug = true;
+static bool debug = false;
 
 namespace colib{
   /* 构造函数和析构函数 */
