@@ -271,15 +271,3 @@ hook是对系统调用API进行一次封装，将其封装成一个与原始的�
  2. socket IO系系列接口。包括read/write/recv/send/connect/accept...这类接口的hook需要先判断fd是否为socket fd， 以及用户是否显式的对该fd设置过非阻塞模式，如果都不是，就不需要hook了。如果需要hook，现在IO协程调度器上注册对应读写事件，事件发生后再继续当前协程。当前协程注册完IO之后即可yield让出执行权。
 
 3. socket/fcntl/ioctl/close...这类接口主要用于处理边缘情况， 比如fd上下文，处理超时，显示非阻塞等。
-
-   
-
-# 参考
-
-1. [代码随想录 - coroutine-lib - github](https://github.com/youngyangyang04/coroutine-lib/tree/main)
-1. [libco - github](https://github.com/Tencent/libco)
-1. [出于什么样的原因，诞生了「协程」这一概念](https://www.zhihu.com/question/50185085/answer/183463734)
-1. [协程理论](https://lewissbaker.github.io/2017/09/25/coroutine-theory)
-1. [什么是协程](https://zhuanlan.zhihu.com/p/172471249)
-1. [协程的好处](https://www.zhihu.com/question/20511233/answer/2743607300)
-

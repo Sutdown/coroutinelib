@@ -1,3 +1,3 @@
 git add .
-git commit -m "readme update"
+git commit -m "hook"
 git push origin main                                                                

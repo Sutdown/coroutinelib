@@ -34,4 +34,9 @@ namespace colib{
   void set_hook_enable(bool flag);
 }
 
+extern "C"{
+  // track original version
+
+}
+
 #endif
