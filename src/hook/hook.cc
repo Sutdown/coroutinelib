@@ -86,10 +86,36 @@ extern "C"
     return 0;
   }
   int usleep(useconds_t usec){
+    if (!colib::t_hook_enable)
+    {
+      return usleep_f(usec);
+    }
 
+    std::shared_ptr<colib::Fiber> fiber = colib::Fiber::GetThis();
+    colib::IOManager *iom = colib::IOManager::GetThis();
+    // add a timer to reschedule this fiber
+    iom->addTimer(usec / 1000, [fiber, iom]()
+                  { iom->scheduleLock(fiber); });
+    // wait for the next resume
+    fiber->yield();
+    return 0;
   }
   int nanosleep(const struct timespec *req, struct timespec *rem){
+    if (!colib::t_hook_enable)
+    {
+      return nanosleep_f(req, rem);
+    }
 
+    int timeout_ms = req->tv_sec * 1000 + req->tv_nsec / 1000 / 1000;
+
+    std::shared_ptr<colib::Fiber> fiber = colib::Fiber::GetThis();
+    colib::IOManager *iom = colib::IOManager::GetThis();
+    // add a timer to reschedule this fiber
+    iom->addTimer(timeout_ms, [fiber, iom]()
+                  { iom->scheduleLock(fiber, -1); });
+    // wait for the next resume
+    fiber->yield();
+    return 0;
   }
 
   /* socket function */
