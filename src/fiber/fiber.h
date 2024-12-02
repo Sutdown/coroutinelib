@@ -17,9 +17,9 @@ namespace colib
   public:
     enum State
     {
-      READY, // 就绪
+      READY,   // 就绪
       RUNNING, // 运行
-      TERM // 结束
+      TERM     // 结束
     };
 
   private:

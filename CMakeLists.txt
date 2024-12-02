@@ -15,7 +15,7 @@ set(SOURCES
     src/timer/timer.h
     src/iomanager/ioscheduler.cc
     src/iomanager/ioscheduler.h
-    tests/test_iomanager.cc
+    src/main.cc
 )
 
 include_directories(
@@ -26,4 +26,4 @@ include_directories(
       src/iomanager
 )
 
-add_executable(test_iomanager ${SOURCES})
+add_executable(test ${SOURCES})

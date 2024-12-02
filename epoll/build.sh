@@ -1,0 +1,1 @@
+g++ *.cc -std=c++17 -o epoll -ldl -lpthread 
